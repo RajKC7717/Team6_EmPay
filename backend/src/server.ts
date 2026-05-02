@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import leaveRoutes from './routes/leaveRoutes';
 import performanceRoutes from './routes/performanceRoutes';
+import policyRoutes from './routes/policyRoutes';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/performance', performanceRoutes);
+app.use('/api/policies', policyRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
