@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import leaveRoutes from './routes/leaveRoutes';
+import attendanceRoutes from './routes/attendanceRoutes';
 import performanceRoutes from './routes/performanceRoutes';
 import policyRoutes from './routes/policyRoutes';
 import taxRoutes from './routes/taxRoutes';
@@ -24,6 +25,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/leave', leaveRoutes);
+app.use('/api/attendance', attendanceRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/policies', policyRoutes);
 app.use('/api/tax', taxRoutes);
