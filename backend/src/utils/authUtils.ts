@@ -39,21 +39,21 @@ export const verifyToken = (token: string): any => {
 export const checkAccountLock = async (userId: number): Promise<boolean> => {
   const query = 'SELECT account_locked_until FROM users WHERE id = $1';
   const result = await pool.query(query, [userId]);
-  
+
   if (!result.rows[0]?.account_locked_until) return false;
-  
+
   const lockUntil = new Date(result.rows[0].account_locked_until);
   const now = new Date();
-  
+
   if (now < lockUntil) {
     return true;
   }
-  
+
   await pool.query(
     'UPDATE users SET account_locked_until = NULL, failed_login_attempts = 0 WHERE id = $1',
     [userId]
   );
-  
+
   return false;
 };
 
@@ -68,7 +68,7 @@ export const incrementFailedAttempts = async (userId: number): Promise<void> => 
         END
     WHERE id = $1
   `;
-  
+
   await pool.query(query, [userId]);
 };
 
