@@ -5,24 +5,18 @@ interface GenerateLoginIdParams {
   firstName: string;
   lastName: string;
   joiningYear: number;
+  companyId: number;
 }
 
 export const generateLoginId = async (params: GenerateLoginIdParams): Promise<string> => {
-  const { companyCode, firstName, lastName, joiningYear } = params;
+  const { companyCode, firstName, lastName, joiningYear, companyId } = params;
   
   const firstNamePrefix = firstName.substring(0, 2).toUpperCase();
   const lastNamePrefix = lastName.substring(0, 2).toUpperCase();
   
-  const query = `
-    SELECT COUNT(*) as count 
-    FROM employees 
-    WHERE EXTRACT(YEAR FROM date_of_joining) = $1
-  `;
+  const serialNumber = await getNextSerialNumber(joiningYear, companyId);
   
-  const result = await pool.query(query, [joiningYear]);
-  const serialNumber = (parseInt(result.rows[0].count) + 1).toString().padStart(4, '0');
-  
-  return `${companyCode}${firstNamePrefix}${lastNamePrefix}${joiningYear}${serialNumber}`;
+  return `${companyCode}${firstNamePrefix}${lastNamePrefix}${joiningYear}${serialNumber.toString().padStart(4, '0')}`;
 };
 
 export const generatePassword = (): string => {
@@ -41,14 +35,15 @@ export const generatePassword = (): string => {
   return password;
 };
 
-export const getNextSerialNumber = async (joiningYear: number): Promise<number> => {
+export const getNextSerialNumber = async (joiningYear: number, companyId: number): Promise<number> => {
   const query = `
     SELECT MAX(serial_number) as max_serial 
     FROM employees 
-    WHERE EXTRACT(YEAR FROM date_of_joining) = $1
+    WHERE EXTRACT(YEAR FROM date_of_joining) = $1 
+    AND company_id = $2
   `;
   
-  const result = await pool.query(query, [joiningYear]);
+  const result = await pool.query(query, [joiningYear, companyId]);
   const maxSerial = result.rows[0].max_serial || 0;
   
   return maxSerial + 1;

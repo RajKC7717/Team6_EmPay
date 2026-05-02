@@ -56,13 +56,14 @@ export const createEmployee = async (req: Request, res: Response) => {
     const companyCode = companyResult.rows[0].company_code;
 
     const joiningYear = joiningDate.getFullYear();
-    const serialNumber = await getNextSerialNumber(joiningYear);
+    const serialNumber = await getNextSerialNumber(joiningYear, companyId);
     
     const loginId = await generateLoginId({
       companyCode,
       firstName,
       lastName,
-      joiningYear
+      joiningYear,
+      companyId
     });
 
     const tempPassword = generatePassword();
