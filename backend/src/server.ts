@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
+import leaveRoutes from './routes/leaveRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/leave', leaveRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
