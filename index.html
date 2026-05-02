@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHRMS - Smart HR & Payroll for Smarter Workplaces</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                        <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="white"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#6366f1"/>
+                                <stop offset="100%" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>SmartHRMS</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="btn-secondary">Sign In</button>
+                    <button class="btn-primary">Get Started</button>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="fade-in">Smart HR & Payroll for Smarter Workplaces</h1>
+                    <p class="fade-in delay-1">Manage employees, payroll, attendance, and branches — all in one intelligent platform.</p>
+                    <div class="hero-cta fade-in delay-2">
+                        <button class="btn-primary btn-large">Get Started Free</button>
+                        <button class="btn-outline btn-large">Book Demo</button>
+                    </div>
+                    <div class="hero-stats fade-in delay-3">
+                        <div class="stat">
+                            <span class="stat-number">10K+</span>
+                            <span class="stat-label">Companies</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">500K+</span>
+                            <span class="stat-label">Employees</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">99.9%</span>
+                            <span class="stat-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual fade-in delay-2">
+                    <div class="dashboard-mockup">
+                        <div class="mockup-window">
+                            <div class="mockup-header">
+                                <div class="mockup-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="mockup-title">SmartHRMS Dashboard</div>
+                            </div>
+                            <div class="mockup-content">
+                                <div class="mockup-sidebar">
+                                    <div class="mockup-menu-item active"></div>
+                                    <div class="mockup-menu-item"></div>
+                                    <div class="mockup-menu-item"></div>
+                                    <div class="mockup-menu-item"></div>
+                                </div>
+                                <div class="mockup-main">
+                                    <div class="mockup-cards">
+                                        <div class="mockup-card"></div>
+                                        <div class="mockup-card"></div>
+                                        <div class="mockup-card"></div>
+                                        <div class="mockup-card"></div>
+                                    </div>
+                                    <div class="mockup-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Everything You Need to Manage Your Workforce</h2>
+                <p>Powerful features designed for modern HR teams</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <path d="M12 16H18V22H12V16Z M22 16H28V22H22V16Z M12 26H18V32H12V26Z M22 26H28V32H22V26Z" fill="#6366f1"/>
+                        </svg>
+                    </div>
+                    <h3>Multi-Branch Management</h3>
+                    <p>Manage multiple offices from a single dashboard with centralized control and insights.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <circle cx="20" cy="15" r="5" fill="#6366f1"/>
+                            <path d="M12 30C12 25 15 22 20 22C25 22 28 25 28 30" stroke="#6366f1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Role-Based Dashboards</h3>
+                    <p>Admin, HR, Payroll, and Employee-specific views tailored to each role's needs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <rect x="12" y="12" width="16" height="16" rx="2" stroke="#6366f1" stroke-width="2"/>
+                            <path d="M16 20L18 22L24 16" stroke="#6366f1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Smart Payroll System</h3>
+                    <p>Automated salary calculations, tax deductions, and instant payslip generation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <path d="M14 12H26V18H14V12Z M14 22H26V28H14V22Z" stroke="#6366f1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Employee Lifecycle Management</h3>
+                    <p>From onboarding to exit, manage every stage of the employee journey seamlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <circle cx="20" cy="20" r="8" stroke="#6366f1" stroke-width="2"/>
+                            <path d="M20 14V20L24 22" stroke="#6366f1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Attendance & Leave Tracking</h3>
+                    <p>Real-time attendance monitoring and streamlined leave approval workflows.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="10" fill="#eef2ff"/>
+                            <path d="M20 12L24 16L20 20L16 16L20 12Z M20 20L24 24L20 28L16 24L20 20Z" fill="#6366f1"/>
+                        </svg>
+                    </div>
+                    <h3>Secure & Scalable</h3>
+                    <p>Multi-tenant architecture with RBAC security and enterprise-grade data protection.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Get started in 5 simple steps</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Company Registration</h3>
+                        <p>Sign up and become the Admin with full control over your organization.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Create Branches</h3>
+                        <p>Admin creates branches and assigns HR managers to each location.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Add Employees</h3>
+                        <p>HR adds employees and manages their complete lifecycle.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Process Payroll</h3>
+                        <p>Payroll team processes salaries with automated calculations.</p>
+                    </div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Employee Access</h3>
+                        <p>Employees access their self-service dashboard for all HR needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Role-Based Dashboards Section -->
+    <section class="dashboards">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tailored Dashboards for Every Role</h2>
+                <p>Personalized experiences that empower your team</p>
+            </div>
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="admin">Admin Dashboard</button>
+                <button class="tab-btn" data-tab="hr">HR Dashboard</button>
+                <button class="tab-btn" data-tab="payroll">Payroll Dashboard</button>
+                <button class="tab-btn" data-tab="employee">Employee Dashboard</button>
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-panel active" data-panel="admin">
+                    <div class="panel-info">
+                        <h3>Admin Dashboard</h3>
+                        <p>Complete organizational control with real-time analytics</p>
+                        <ul class="panel-features">
+                            <li>Multi-branch overview and management</li>
+                            <li>Company-wide analytics and reports</li>
+                            <li>User role and permission management</li>
+                            <li>System configuration and settings</li>
+                        </ul>
+                    </div>
+                    <div class="panel-visual">
+                        <div class="dashboard-preview admin-preview"></div>
+                    </div>
+                </div>
+                <div class="dashboard-panel" data-panel="hr">
+                    <div class="panel-info">
+                        <h3>HR Dashboard</h3>
+                        <p>Streamline employee management and operations</p>
+                        <ul class="panel-features">
+                            <li>Employee database and profiles</li>
+                            <li>Attendance and leave management</li>
+                            <li>Recruitment and onboarding</li>
+                            <li>Performance tracking</li>
+                        </ul>
+                    </div>
+                    <div class="panel-visual">
+                        <div class="dashboard-preview hr-preview"></div>
+                    </div>
+                </div>
+                <div class="dashboard-panel" data-panel="payroll">
+                    <div class="panel-info">
+                        <h3>Payroll Dashboard</h3>
+                        <p>Automated payroll processing made simple</p>
+                        <ul class="panel-features">
+                            <li>Salary calculation and processing</li>
+                            <li>Tax computation and compliance</li>
+                            <li>Payslip generation and distribution</li>
+                            <li>Payment history and reports</li>
+                        </ul>
+                    </div>
+                    <div class="panel-visual">
+                        <div class="dashboard-preview payroll-preview"></div>
+                    </div>
+                </div>
+                <div class="dashboard-panel" data-panel="employee">
+                    <div class="panel-info">
+                        <h3>Employee Dashboard</h3>
+                        <p>Self-service portal for all employee needs</p>
+                        <ul class="panel-features">
+                            <li>Personal profile and documents</li>
+                            <li>Leave requests and balance</li>
+                            <li>Salary slips and tax documents</li>
+                            <li>Attendance records</li>
+                        </ul>
+                    </div>
+                    <div class="panel-visual">
+                        <div class="dashboard-preview employee-preview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose SmartHRMS</h2>
+                <p>Built for modern businesses that value efficiency</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Simplifies HR Operations</h3>
+                    <p>Automate repetitive tasks and focus on strategic initiatives.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Reduces Manual Work</h3>
+                    <p>Eliminate paperwork and manual data entry with smart automation.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">📈</div>
+                    <h3>Scales With Your Company</h3>
+                    <p>From 10 to 10,000 employees, grow without limitations.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h3>Real-Time Insights</h3>
+                    <p>Make data-driven decisions with live analytics and reports.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔒</div>
+                    <h3>Secure Data Handling</h3>
+                    <p>Enterprise-grade security with compliance and encryption.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Section -->
+    <section class="advanced-features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Advanced Features</h2>
+                <p>Powered by cutting-edge technology</p>
+            </div>
+            <div class="advanced-grid">
+                <div class="advanced-card">
+                    <div class="advanced-icon">🤖</div>
+                    <h3>AI-Based Insights</h3>
+                    <p>Predictive analytics for attendance patterns and attrition risk.</p>
+                </div>
+                <div class="advanced-card">
+                    <div class="advanced-icon">🔔</div>
+                    <h3>Automated Notifications</h3>
+                    <p>Smart alerts for approvals, deadlines, and important events.</p>
+                </div>
+                <div class="advanced-card">
+                    <div class="advanced-icon">📝</div>
+                    <h3>Audit Logs</h3>
+                    <p>Complete activity tracking for compliance and security.</p>
+                </div>
+                <div class="advanced-card">
+                    <div class="advanced-icon">🔐</div>
+                    <h3>Custom Role Permissions</h3>
+                    <p>Granular access control tailored to your organization.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Choose the plan that fits your needs</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <p>Perfect for small teams</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="currency">$</span>
+                        <span class="amount">29</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Up to 25 employees</li>
+                        <li>Single branch</li>
+                        <li>Basic payroll</li>
+                        <li>Attendance tracking</li>
+                        <li>Email support</li>
+                    </ul>
+                    <button class="btn-outline btn-large">Get Started</button>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Growth</h3>
+                        <p>For growing SMEs</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="currency">$</span>
+                        <span class="amount">99</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Up to 100 employees</li>
+                        <li>Multiple branches</li>
+                        <li>Advanced payroll</li>
+                        <li>Leave management</li>
+                        <li>Priority support</li>
+                        <li>Custom reports</li>
+                    </ul>
+                    <button class="btn-primary btn-large">Get Started</button>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <p>For large organizations</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="amount">Custom</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Unlimited employees</li>
+                        <li>Unlimited branches</li>
+                        <li>All features included</li>
+                        <li>AI insights</li>
+                        <li>Dedicated support</li>
+                        <li>Custom integrations</li>
+                        <li>SLA guarantee</li>
+                    </ul>
+                    <button class="btn-outline btn-large">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>Trusted by HR Teams Worldwide</h2>
+                <p>See what our customers have to say</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"SmartHRMS transformed how we manage our workforce across 5 locations. The multi-branch feature is a game-changer, and payroll processing is now effortless."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SJ</div>
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>HR Director, TechCorp Inc.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"We reduced our HR admin time by 60% after switching to SmartHRMS. The role-based dashboards give everyone exactly what they need without overwhelming them."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MP</div>
+                        <div class="author-info">
+                            <h4>Michael Patel</h4>
+                            <p>Founder & CEO, GrowthLabs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"The automated payroll system is incredibly accurate and saves us hours every month. The AI insights help us identify and address attendance issues proactively."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">EC</div>
+                        <div class="author-info">
+                            <h4>Emily Chen</h4>
+                            <p>Payroll Manager, Innovate Solutions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Start Managing Your Workforce the Smart Way</h2>
+                <p>Join thousands of companies that trust SmartHRMS for their HR operations</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary btn-large">Get Started Free</button>
+                    <button class="btn-outline btn-large">Contact Sales</button>
+                </div>
+                <p class="cta-note">No credit card required • 14-day free trial • Cancel anytime</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient2)"/>
+                            <path d="M16 8L22 12V20L16 24L10 20V12L16 8Z" fill="white"/>
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32">
+                                    <stop offset="0%" stop-color="#6366f1"/>
+                                    <stop offset="100%" stop-color="#8b5cf6"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>SmartHRMS</span>
+                    </div>
+                    <p>Smart HR & Payroll for Smarter Workplaces</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter">𝕏</a>
+                        <a href="#" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Integrations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="mailto:hello@smarthrms.com">hello@smarthrms.com</a></li>
+                        <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
+                        <li>123 Business Ave<br>San Francisco, CA 94107</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartHRMS. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
