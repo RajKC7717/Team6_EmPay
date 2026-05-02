@@ -1,120 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../../styles/Dashboard.css';
+import React, { useEffect, useState } from 'react';
+import api from '../../api';
+import DashboardLayout from '../../components/DashboardLayout';
+import StatusBadge from '../../components/StatusBadge';
+import Modal from '../../components/Modal';
 
 const HRLeave: React.FC = () => {
-  const [leaves, setLeaves] = useState<any[]>([]);
+  const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<'pending' | 'all'>('pending');
+  const [rejectFor, setRejectFor] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    fetchLeaves();
-  }, []);
-
-  const fetchLeaves = async () => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/leave/requests', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setLeaves(response.data.leaveRequests);
-    } catch (error) {
-      console.error('Error fetching leaves:', error);
+      const r = await api.get('/leave/requests', { params: tab === 'pending' ? { status: 'pending' } : {} });
+      setRequests(r.data.leaveRequests || []);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (leaveId: number) => {
+  useEffect(() => { fetchData(); }, [tab]);
+
+  const approve = async (id: number) => {
+    if (!window.confirm('Approve this leave request?')) return;
+    setBusy(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/leave/requests/${leaveId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchLeaves();
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to approve leave');
+      await api.put(`/leave/requests/${id}/approve`);
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to approve');
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleReject = async (leaveId: number) => {
-    const reason = prompt('Enter rejection reason:');
-    if (!reason) return;
+  const submitReject = async () => {
+    if (!rejectFor) return;
+    if (!rejectReason.trim()) { alert('Please provide a reason'); return; }
+    setBusy(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/leave/requests/${leaveId}/reject`, {rejectionReason: reason}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchLeaves();
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to reject leave');
+      await api.put(`/leave/requests/${rejectFor.id}/reject`, { rejectionReason: rejectReason });
+      setRejectFor(null);
+      setRejectReason('');
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to reject');
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div className="dashboard-layout">
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo">EmPay HRMS</div>
+    <DashboardLayout title="Leave Requests">
+      <div className="page-header">
+        <div>
+          <h1>Leave Approval Queue</h1>
+          <p className="page-subtitle">Approve or reject employee leave applications. Only HR and Admin can decide here.</p>
         </div>
-        <nav className="sidebar-nav">
-          <a href="/hr" className="nav-item">Dashboard</a>
-          <a href="/hr/employees" className="nav-item">Employees</a>
-          <a href="/hr/attendance" className="nav-item">Attendance</a>
-          <a href="/hr/leave" className="nav-item active">Leave Management</a>
-          <a href="/hr/performance" className="nav-item">Performance</a>
-        </nav>
-      </aside>
-      <main className="main-content">
-        <div className="topbar">
-          <div className="topbar-left"><h2>Leave Management</h2></div>
-          <div className="topbar-right">
-            <div className="user-avatar">H</div>
+      </div>
+
+      <div className="policy-notice">
+        ⓘ <strong>Leave Policy:</strong> Paid Time Off (18 days/year, carry-forward up to 5), Sick Leave (6 days/year),
+        Unpaid Leave (unlimited but unpaid). Approved leaves auto-create attendance records as "On Leave".
+      </div>
+
+      <div className="tabs">
+        <button className={`tab ${tab === 'pending' ? 'active' : ''}`} onClick={() => setTab('pending')}>Pending</button>
+        <button className={`tab ${tab === 'all' ? 'active' : ''}`} onClick={() => setTab('all')}>All Requests</button>
+      </div>
+
+      <div className="table-wrapper">
+        {loading ? (
+          <div className="loading">Loading requests…</div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Type</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Days</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((r) => (
+                <tr key={r.id}>
+                  <td><strong>{r.first_name} {r.last_name}</strong></td>
+                  <td>{r.department || '—'}</td>
+                  <td>{r.leave_type_name} <span className="pill" style={{ marginLeft: 6 }}>{r.is_paid ? 'paid' : 'unpaid'}</span></td>
+                  <td>{new Date(r.from_date).toLocaleDateString()}</td>
+                  <td>{new Date(r.to_date).toLocaleDateString()}</td>
+                  <td>{r.days_requested}</td>
+                  <td style={{ maxWidth: 220, fontSize: 12.5, color: 'var(--text-muted)' }}>{r.reason}</td>
+                  <td><StatusBadge status={r.status} /></td>
+                  <td className="table-actions">
+                    {r.status === 'pending' && (
+                      <>
+                        <button className="btn-success btn-sm" disabled={busy} onClick={() => approve(r.id)}>Approve</button>
+                        <button className="btn-danger btn-sm" disabled={busy} onClick={() => setRejectFor(r)}>Reject</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {requests.length === 0 && (
+                <tr><td colSpan={9} className="empty-state">No leave requests.</td></tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {rejectFor && (
+        <Modal
+          open
+          title={`Reject leave — ${rejectFor.first_name} ${rejectFor.last_name}`}
+          onClose={() => { setRejectFor(null); setRejectReason(''); }}
+          footer={
+            <>
+              <button className="btn-secondary" onClick={() => { setRejectFor(null); setRejectReason(''); }}>Cancel</button>
+              <button className="btn-danger" onClick={submitReject} disabled={busy}>{busy ? 'Rejecting…' : 'Reject Request'}</button>
+            </>
+          }
+        >
+          <div className="form-group">
+            <label>Reason for rejection <span className="required">*</span></label>
+            <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Explain why this request is being rejected" />
+            <span className="form-hint">The employee will see this reason in their leave history.</span>
           </div>
-        </div>
-        <div className="content-area">
-          <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">Leave Requests</h3>
-            </div>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Type</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaves.map((leave: any) => (
-                    <tr key={leave.id}>
-                      <td>{leave.first_name} {leave.last_name}</td>
-                      <td>{leave.leave_type_name}</td>
-                      <td>{new Date(leave.from_date).toLocaleDateString()}</td>
-                      <td>{new Date(leave.to_date).toLocaleDateString()}</td>
-                      <td><span className={`badge badge-${leave.status === 'approved' ? 'success' : leave.status === 'pending' ? 'warning' : 'danger'}`}>{leave.status}</span></td>
-                      <td>
-                        {leave.status === 'pending' && (
-                          <>
-                            <button className="btn-primary" onClick={() => handleApprove(leave.id)} style={{marginRight: '8px'}}>Approve</button>
-                            <button className="btn-outline" onClick={() => handleReject(leave.id)}>Reject</button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
+        </Modal>
+      )}
+    </DashboardLayout>
   );
 };
 

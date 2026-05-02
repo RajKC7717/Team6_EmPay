@@ -1,85 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../../styles/Dashboard.css';
+import React, { useEffect, useState } from 'react';
+import api from '../../api';
+import DashboardLayout from '../../components/DashboardLayout';
+import StatusBadge from '../../components/StatusBadge';
 
 const EmployeeAttendance: React.FC = () => {
   const [attendance, setAttendance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date(); d.setDate(1);
+    return d.toISOString().slice(0, 10);
+  });
+  const [endDate, setEndDate] = useState(() => new Date().toISOString().slice(0, 10));
 
-  useEffect(() => {
-    fetchAttendance();
-  }, []);
-
-  const fetchAttendance = async () => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/attendance/history', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAttendance(response.data.attendance);
-    } catch (error) {
-      console.error('Error fetching attendance:', error);
-    } finally {
-      setLoading(false);
-    }
+      const r = await api.get('/attendance/history', { params: { startDate, endDate } });
+      setAttendance(r.data.attendance || []);
+    } catch { setAttendance([]); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchData(); }, [startDate, endDate]);
+
+  const present = attendance.filter((a) => a.status === 'present').length;
+  const absent = attendance.filter((a) => a.status === 'absent').length;
+  const halfDay = attendance.filter((a) => a.status === 'half_day').length;
+  const onLeave = attendance.filter((a) => a.status === 'on_leave').length;
+
+  const formatTime = (t: string | null) => {
+    if (!t) return '—';
+    try { return new Date(t).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+    catch { return '—'; }
   };
 
   return (
-    <div className="dashboard-layout">
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo">EmPay HRMS</div>
+    <DashboardLayout title="My Attendance">
+      <div className="page-header">
+        <div>
+          <h1>Attendance History</h1>
+          <p className="page-subtitle">Your attendance records for the selected period</p>
         </div>
-        <nav className="sidebar-nav">
-          <a href="/employee" className="nav-item">Dashboard</a>
-          <a href="/employee/attendance" className="nav-item active">My Attendance</a>
-          <a href="/employee/leave" className="nav-item">Leave Requests</a>
-          <a href="/employee/payslips" className="nav-item">Payslips</a>
-          <a href="/employee/profile" className="nav-item">My Profile</a>
-        </nav>
-      </aside>
-      <main className="main-content">
-        <div className="topbar">
-          <div className="topbar-left"><h2>My Attendance</h2></div>
-          <div className="topbar-right">
-            <div className="user-avatar">E</div>
+      </div>
+
+      <div className="policy-notice">
+        ⓘ <strong>Attendance Policy:</strong> Check-in before 10:00 AM. Duration ≥ 8h = Present, 4–8h = Half Day.
+        Auto-absent at 11:59 PM for unmarked days.
+      </div>
+
+      <div className="filter-bar">
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>to</span>
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+      </div>
+
+      <div className="stats-grid">
+        <div className="stat-card fade-up">
+          <div className="stat-card-header">
+            <span className="stat-card-title">Total Days</span>
+            <div className="stat-card-icon">◑</div>
           </div>
+          <div className="stat-card-value">{attendance.length}</div>
         </div>
-        <div className="content-area">
-          <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">Attendance History</h3>
-            </div>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attendance.map((record: any) => (
-                    <tr key={record.id}>
-                      <td>{new Date(record.date).toLocaleDateString()}</td>
-                      <td>{record.check_in_time ? new Date(record.check_in_time).toLocaleTimeString() : '-'}</td>
-                      <td>{record.check_out_time ? new Date(record.check_out_time).toLocaleTimeString() : '-'}</td>
-                      <td>{record.duration_minutes ? `${record.duration_minutes} mins` : '-'}</td>
-                      <td><span className={`badge badge-${record.status === 'present' ? 'success' : 'warning'}`}>{record.status}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+        <div className="stat-card fade-up delay-1">
+          <div className="stat-card-header">
+            <span className="stat-card-title">Present</span>
+            <div className="stat-card-icon green">◐</div>
           </div>
+          <div className="stat-card-value">{present}</div>
         </div>
-      </main>
-    </div>
+        <div className="stat-card fade-up delay-2">
+          <div className="stat-card-header">
+            <span className="stat-card-title">Absent</span>
+            <div className="stat-card-icon red">◔</div>
+          </div>
+          <div className="stat-card-value">{absent}</div>
+        </div>
+        <div className="stat-card fade-up delay-3">
+          <div className="stat-card-header">
+            <span className="stat-card-title">On Leave</span>
+            <div className="stat-card-icon blue">✈</div>
+          </div>
+          <div className="stat-card-value">{onLeave}</div>
+        </div>
+        <div className="stat-card fade-up delay-4">
+          <div className="stat-card-header">
+            <span className="stat-card-title">Half Days</span>
+            <div className="stat-card-icon amber">◓</div>
+          </div>
+          <div className="stat-card-value">{halfDay}</div>
+        </div>
+      </div>
+
+      <div className="table-wrapper fade-up">
+        {loading ? (
+          <div className="loading">Loading attendance…</div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Duration</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {attendance.map((a) => (
+                <tr key={a.id}>
+                  <td><strong>{new Date(a.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</strong></td>
+                  <td>{formatTime(a.check_in_time)}</td>
+                  <td>{formatTime(a.check_out_time)}</td>
+                  <td>{a.work_duration ? `${Number(a.work_duration).toFixed(1)}h` : '—'}</td>
+                  <td><StatusBadge status={a.status} /></td>
+                </tr>
+              ))}
+              {attendance.length === 0 && (
+                <tr><td colSpan={5} className="empty-state">No attendance records for this period.</td></tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </DashboardLayout>
   );
 };
 

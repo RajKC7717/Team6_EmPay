@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls C:\\\\Users\\\\choud\\\\Desktop\\\\sy\\\\hackathons\\\\odoo_finale\\\\EMPAY\\\\frontend *)"
+    ]
+  }
+}

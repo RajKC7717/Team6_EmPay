@@ -1,157 +1,218 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../../styles/Dashboard.css';
+import React, { useEffect, useState } from 'react';
+import api from '../../api';
+import DashboardLayout from '../../components/DashboardLayout';
+import StatusBadge from '../../components/StatusBadge';
+import EmployeeFormModal from '../../components/EmployeeFormModal';
+import Modal from '../../components/Modal';
 
 const HREmployees: React.FC = () => {
   const [employees, setEmployees] = useState<any[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    department: '',
-    designation: '',
-    dateOfJoining: '',
-    basicWage: '',
-    employmentType: 'full_time'
-  });
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [department, setDepartment] = useState('');
+  const [addOpen, setAddOpen] = useState(false);
+  const [credentials, setCredentials] = useState<any>(null);
+  const [allocateFor, setAllocateFor] = useState<any | null>(null);
 
   const fetchEmployees = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/employees', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setEmployees(response.data.employees);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
+      const r = await api.get('/employees');
+      setEmployees(r.data.employees || []);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => { fetchEmployees(); }, []);
+
+  const departments = Array.from(new Set(employees.map((e) => e.department).filter(Boolean)));
+  const filtered = employees.filter((e) => {
+    if (search && !`${e.first_name} ${e.last_name} ${e.email}`.toLowerCase().includes(search.toLowerCase())) return false;
+    if (department && e.department !== department) return false;
+    return true;
+  });
+
+  return (
+    <DashboardLayout title="Employees">
+      <div className="page-header">
+        <div>
+          <h1>Employee Directory</h1>
+          <p className="page-subtitle">{employees.length} employees · {departments.length} departments</p>
+        </div>
+        <div className="page-actions">
+          <button className="btn-primary" onClick={() => setAddOpen(true)}>+ Add Employee</button>
+        </div>
+      </div>
+
+      <div className="filter-bar">
+        <input
+          type="text"
+          placeholder="Search by name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
+        <select value={department} onChange={(e) => setDepartment(e.target.value)}>
+          <option value="">All departments</option>
+          {departments.map((d) => <option key={d} value={d}>{d}</option>)}
+        </select>
+      </div>
+
+      <div className="table-wrapper">
+        {loading ? (
+          <div className="loading">Loading…</div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Login ID</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((e) => (
+                <tr key={e.id}>
+                  <td><strong>{e.first_name} {e.last_name}</strong></td>
+                  <td><span className="login-id-highlight">{e.login_id || '—'}</span></td>
+                  <td>{e.email}</td>
+                  <td>{e.department}</td>
+                  <td>{e.designation}</td>
+                  <td>{e.date_of_joining ? new Date(e.date_of_joining).toLocaleDateString() : '—'}</td>
+                  <td><StatusBadge status={e.status} /></td>
+                  <td className="table-actions">
+                    <button className="btn-secondary btn-sm" onClick={() => setAllocateFor(e)}>Allocate Leave</button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={8} className="empty-state">No employees match your filters.</td></tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {addOpen && (
+        <EmployeeFormModal
+          onClose={() => setAddOpen(false)}
+          onCreated={(creds) => { setAddOpen(false); if (creds) setCredentials(creds); fetchEmployees(); }}
+        />
+      )}
+
+      {credentials && (
+        <Modal
+          open
+          title="Employee Created"
+          onClose={() => setCredentials(null)}
+          footer={<button className="btn-primary" onClick={() => setCredentials(null)}>Done</button>}
+        >
+          <div className="alert alert-success">✓ Welcome email sent to {credentials.email}.</div>
+          <div className="detail-grid">
+            <div className="detail-item">
+              <span className="detail-label">Login ID</span>
+              <span className="detail-value"><span className="login-id-highlight">{credentials.loginId}</span></span>
+            </div>
+            <div className="detail-item">
+              <span className="detail-label">Temporary Password</span>
+              <span className="detail-value"><code style={{ background: 'var(--gray-100)', padding: '4px 8px', borderRadius: 4 }}>{credentials.password}</code></span>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {allocateFor && (
+        <AllocateLeaveModal employee={allocateFor} onClose={() => setAllocateFor(null)} />
+      )}
+    </DashboardLayout>
+  );
+};
+
+const AllocateLeaveModal: React.FC<{ employee: any; onClose: () => void }> = ({ employee, onClose }) => {
+  const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
+  const [leaveTypeId, setLeaveTypeId] = useState<number | ''>('');
+  const [days, setDays] = useState('');
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api.get('/leave/balance').then((r) => {
+      setLeaveTypes(r.data.leaveBalances || []);
+    }).catch(() => {});
+  }, []);
+
+  const submit = async () => {
+    setError(null); setSuccess(null);
+    if (!leaveTypeId || !days || Number(days) <= 0) {
+      setError('Please pick a leave type and positive day count');
+      return;
+    }
+    setBusy(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/employees', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      await api.post('/leave/allocate', {
+        employeeId: employee.id,
+        leaveTypeId,
+        totalDays: Number(days),
+        validityYear: year,
       });
-      setShowForm(false);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        department: '',
-        designation: '',
-        dateOfJoining: '',
-        basicWage: '',
-        employmentType: 'full_time'
-      });
-      fetchEmployees();
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create employee');
+      setSuccess(`Allocated ${days} days successfully`);
+      setDays('');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to allocate');
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div className="dashboard-layout">
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo">EmPay HRMS</div>
+    <Modal
+      open
+      title={`Allocate Leave — ${employee.first_name} ${employee.last_name}`}
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn-secondary" onClick={onClose}>Close</button>
+          <button className="btn-primary" onClick={submit} disabled={busy}>{busy ? 'Saving…' : 'Allocate'}</button>
+        </>
+      }
+    >
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
+
+      <div className="form-group">
+        <label>Leave Type</label>
+        <select value={leaveTypeId} onChange={(e) => setLeaveTypeId(Number(e.target.value))}>
+          <option value="">Select…</option>
+          {leaveTypes.map((lt: any) => (
+            <option key={lt.leave_type_id} value={lt.leave_type_id}>
+              {lt.leave_type_name} {lt.is_paid ? '(paid)' : '(unpaid)'}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label>Days to Allocate</label>
+          <input type="number" min={1} value={days} onChange={(e) => setDays(e.target.value)} />
         </div>
-        <nav className="sidebar-nav">
-          <a href="/hr" className="nav-item">Dashboard</a>
-          <a href="/hr/employees" className="nav-item active">Employees</a>
-          <a href="/hr/attendance" className="nav-item">Attendance</a>
-          <a href="/hr/leave" className="nav-item">Leave Management</a>
-          <a href="/hr/performance" className="nav-item">Performance</a>
-        </nav>
-      </aside>
-      <main className="main-content">
-        <div className="topbar">
-          <div className="topbar-left"><h2>Employees</h2></div>
-          <div className="topbar-right">
-            <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-              {showForm ? 'Cancel' : 'Add Employee'}
-            </button>
-            <div className="user-avatar">H</div>
-          </div>
+        <div className="form-group">
+          <label>Validity Year</label>
+          <input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} />
         </div>
-        <div className="content-area">
-          {showForm && (
-            <div className="card">
-              <form onSubmit={handleSubmit} style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
-                <div className="form-group">
-                  <label>First Name</label>
-                  <input type="text" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Last Name</label>
-                  <input type="text" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label>Department</label>
-                  <input type="text" value={formData.department} onChange={(e) => setFormData({...formData, department: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Designation</label>
-                  <input type="text" value={formData.designation} onChange={(e) => setFormData({...formData, designation: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Date of Joining</label>
-                  <input type="date" value={formData.dateOfJoining} onChange={(e) => setFormData({...formData, dateOfJoining: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label>Basic Wage</label>
-                  <input type="number" value={formData.basicWage} onChange={(e) => setFormData({...formData, basicWage: e.target.value})} required />
-                </div>
-                <button type="submit" className="btn-primary" style={{gridColumn: '1 / -1'}}>Create Employee</button>
-              </form>
-            </div>
-          )}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">Employee List</h3>
-            </div>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Department</th>
-                  <th>Designation</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((emp: any) => (
-                  <tr key={emp.id}>
-                    <td>{emp.first_name} {emp.last_name}</td>
-                    <td>{emp.email}</td>
-                    <td>{emp.department}</td>
-                    <td>{emp.designation}</td>
-                    <td><span className="badge badge-success">{emp.status}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      <div className="policy-notice">
+        ⓘ If an allocation already exists for this leave type and year, days will be added to the existing balance.
+      </div>
+    </Modal>
   );
 };
 
