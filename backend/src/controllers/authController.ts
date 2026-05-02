@@ -39,7 +39,6 @@ export const register = async (req: Request, res: Response) => {
         [companyId, email, passwordHash, 'admin', true]
       );
 
-      await client.query('BEGIN');
       await client.query(
         `INSERT INTO leave_types (company_id, name, is_paid, default_days, carry_forward, max_carry_forward_days) VALUES 
         ($1, 'Paid Time Off', true, 18, true, 5),
