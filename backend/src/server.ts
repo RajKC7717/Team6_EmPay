@@ -6,6 +6,7 @@ import employeeRoutes from './routes/employeeRoutes';
 import leaveRoutes from './routes/leaveRoutes';
 import performanceRoutes from './routes/performanceRoutes';
 import policyRoutes from './routes/policyRoutes';
+import taxRoutes from './routes/taxRoutes';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/policies', policyRoutes);
+app.use('/api/tax', taxRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
