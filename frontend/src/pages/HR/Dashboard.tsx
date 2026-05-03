@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
+import EmployeeCards from '../../components/EmployeeCards';
 
 const HRDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const HRDashboard: React.FC = () => {
   const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
   const [todayAtt, setTodayAtt] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCards, setShowCards] = useState(false);
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -37,6 +39,9 @@ const HRDashboard: React.FC = () => {
           <p className="page-subtitle">Manage your team, attendance, and approvals</p>
         </div>
         <div className="page-actions">
+          <button className={showCards ? 'btn-primary btn-sm' : 'btn-outline btn-sm'} onClick={() => setShowCards(!showCards)}>
+            {showCards ? 'Hide Cards' : 'Employee Cards'}
+          </button>
           <button className="btn-outline" onClick={() => navigate('/hr/performance')}>Performance</button>
           <button className="btn-primary" onClick={() => navigate('/hr/employees')}>Add Employee</button>
         </div>
@@ -80,6 +85,20 @@ const HRDashboard: React.FC = () => {
               <div className="stat-card-change">Need your decision</div>
             </div>
           </div>
+
+          {/* Employee Cards View — toggled */}
+          {showCards && (
+            <div className="card fade-up">
+              <div className="card-header">
+                <h3 className="card-title">Employee Live Status</h3>
+              </div>
+              <EmployeeCards
+                employees={employees}
+                onView={(emp) => navigate('/hr/employees')}
+                onAllocate={(emp) => navigate('/hr/leave')}
+              />
+            </div>
+          )}
 
           <div className="card-grid">
             <div className="card fade-up">

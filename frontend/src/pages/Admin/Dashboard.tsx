@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
+import EmployeeCards from '../../components/EmployeeCards';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const AdminDashboard: React.FC = () => {
   const [pendingLeaves, setPendingLeaves] = useState<any[]>([]);
   const [policies, setPolicies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<'table' | 'cards'>('cards');
 
   useEffect(() => {
     Promise.all([
@@ -25,6 +27,7 @@ const AdminDashboard: React.FC = () => {
 
   const activeCount = employees.filter((e) => e.status === 'active').length;
   const departments = new Set(employees.map((e) => e.department).filter(Boolean));
+  const totalWage = employees.filter((e) => e.status === 'active').reduce((s, e) => s + Number(e.basic_wage || 0), 0);
 
   return (
     <DashboardLayout title="Admin Dashboard">
@@ -34,7 +37,8 @@ const AdminDashboard: React.FC = () => {
           <p className="page-subtitle">Here's what's happening at your company today</p>
         </div>
         <div className="page-actions">
-          <button className="btn-outline" onClick={() => navigate('/admin/policies')}>Manage Policies</button>
+          <button className="btn-outline" onClick={() => navigate('/admin/reports')}>Reports</button>
+          <button className="btn-outline" onClick={() => navigate('/admin/settings')}>Settings</button>
           <button className="btn-primary" onClick={() => navigate('/admin/employees')}>Add Employee</button>
         </div>
       </div>
@@ -70,20 +74,32 @@ const AdminDashboard: React.FC = () => {
             </div>
             <div className="stat-card fade-up delay-3">
               <div className="stat-card-header">
-                <span className="stat-card-title">Active Policies</span>
+                <span className="stat-card-title">Monthly Wage Bill</span>
                 <div className="stat-card-icon blue">◓</div>
               </div>
-              <div className="stat-card-value">{policies.filter((p) => p.is_active).length}</div>
-              <div className="stat-card-change">{policies.length} total</div>
+              <div className="stat-card-value">₹{(totalWage / 1000).toFixed(0)}K</div>
+              <div className="stat-card-change">Active employees</div>
             </div>
           </div>
 
-          <div className="card-grid">
-            <div className="card fade-up">
-              <div className="card-header">
-                <h3 className="card-title">Recent Employees</h3>
-                <button className="btn-secondary btn-sm" onClick={() => navigate('/admin/employees')}>View all</button>
+          {/* Employee Cards or Table toggle */}
+          <div className="card fade-up">
+            <div className="card-header">
+              <h3 className="card-title">Employees — Live Status</h3>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button className={view === 'cards' ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} onClick={() => setView('cards')}>Cards</button>
+                <button className={view === 'table' ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} onClick={() => setView('table')}>Table</button>
+                <button className="btn-outline btn-sm" onClick={() => navigate('/admin/employees')}>Manage →</button>
               </div>
+            </div>
+
+            {view === 'cards' ? (
+              <EmployeeCards
+                employees={employees}
+                showSalary
+                onView={(emp) => navigate('/admin/employees')}
+              />
+            ) : (
               <div className="table-wrapper">
                 <table className="table">
                   <thead>
@@ -91,11 +107,12 @@ const AdminDashboard: React.FC = () => {
                       <th>Name</th>
                       <th>Login ID</th>
                       <th>Department</th>
+                      <th>Designation</th>
                       <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {employees.slice(0, 5).map((e) => (
+                    {employees.slice(0, 10).map((e) => (
                       <tr key={e.id}>
                         <td>
                           <strong>{e.first_name} {e.last_name}</strong>
@@ -103,12 +120,13 @@ const AdminDashboard: React.FC = () => {
                         </td>
                         <td><span className="login-id-highlight">{e.login_id || '—'}</span></td>
                         <td>{e.department}</td>
+                        <td>{e.designation}</td>
                         <td><StatusBadge status={e.status} /></td>
                       </tr>
                     ))}
                     {employees.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="empty-state">
+                        <td colSpan={5} className="empty-state">
                           No employees yet. Click "Add Employee" to get started.
                         </td>
                       </tr>
@@ -116,8 +134,10 @@ const AdminDashboard: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            )}
+          </div>
 
+          <div className="card-grid">
             <div className="card fade-up delay-1">
               <div className="card-header">
                 <h3 className="card-title">Pending Leave Requests</h3>
@@ -145,41 +165,41 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="card fade-up delay-2">
-            <div className="card-header">
-              <h3 className="card-title">Quick Actions</h3>
-            </div>
-            <div className="quick-actions">
-              <button className="quick-action" onClick={() => navigate('/admin/employees')}>
-                <div className="quick-action-icon">◔</div>
-                <div>
-                  <div className="quick-action-label">Add Employee</div>
-                  <div className="quick-action-desc">Create with auto login ID</div>
-                </div>
-              </button>
-              <button className="quick-action" onClick={() => navigate('/payroll/payrun')}>
-                <div className="quick-action-icon">◓</div>
-                <div>
-                  <div className="quick-action-label">Run Payroll</div>
-                  <div className="quick-action-desc">Generate payslips</div>
-                </div>
-              </button>
-              <button className="quick-action" onClick={() => navigate('/admin/policies')}>
-                <div className="quick-action-icon">◐</div>
-                <div>
-                  <div className="quick-action-label">Add Policy</div>
-                  <div className="quick-action-desc">Publish company policy</div>
-                </div>
-              </button>
-              <button className="quick-action" onClick={() => navigate('/admin/performance')}>
-                <div className="quick-action-icon">◑</div>
-                <div>
-                  <div className="quick-action-label">Performance</div>
-                  <div className="quick-action-desc">Reviews & goals</div>
-                </div>
-              </button>
+            <div className="card fade-up delay-2">
+              <div className="card-header">
+                <h3 className="card-title">Quick Actions</h3>
+              </div>
+              <div className="quick-actions">
+                <button className="quick-action" onClick={() => navigate('/admin/employees')}>
+                  <div className="quick-action-icon">◔</div>
+                  <div>
+                    <div className="quick-action-label">Add Employee</div>
+                    <div className="quick-action-desc">Create with auto login ID</div>
+                  </div>
+                </button>
+                <button className="quick-action" onClick={() => navigate('/payroll/payrun')}>
+                  <div className="quick-action-icon">◓</div>
+                  <div>
+                    <div className="quick-action-label">Run Payroll</div>
+                    <div className="quick-action-desc">Generate payslips</div>
+                  </div>
+                </button>
+                <button className="quick-action" onClick={() => navigate('/admin/reports')}>
+                  <div className="quick-action-icon">◑</div>
+                  <div>
+                    <div className="quick-action-label">Reports</div>
+                    <div className="quick-action-desc">Salary, attendance, leave</div>
+                  </div>
+                </button>
+                <button className="quick-action" onClick={() => navigate('/admin/settings')}>
+                  <div className="quick-action-icon">◐</div>
+                  <div>
+                    <div className="quick-action-label">Settings</div>
+                    <div className="quick-action-desc">Company, salary structure</div>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </>
