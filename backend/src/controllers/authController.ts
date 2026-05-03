@@ -3,6 +3,7 @@ import pool from '../config/database';
 import { hashPassword, comparePassword, generateToken, checkAccountLock, incrementFailedAttempts, resetFailedAttempts } from '../utils/authUtils';
 import { registerSchema, loginSchema, changePasswordSchema, resetPasswordRequestSchema, resetPasswordSchema } from '../utils/validators';
 import { sendEmail } from '../services/emailService';
+import { generateOtp, storeOtp, verifyOtp as verifyOtpCode, sendOtpSms } from '../services/otpService';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -219,6 +220,68 @@ export const resetPassword = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Password reset error:', error);
     res.status(400).json({ error: 'Invalid or expired reset token' });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { phone } = req.body;
+    if (!phone || phone.length < 10) {
+      return res.status(400).json({ error: 'Enter a valid phone number' });
+    }
+
+    // Always respond the same (don't reveal if number exists)
+    const otp = generateOtp();
+    storeOtp(phone, otp);
+
+    // Print OTP to backend console
+    await sendOtpSms(phone, otp);
+
+    res.json({ message: 'If this number is registered, an OTP has been sent.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+};
+
+export const verifyOtpHandler = async (req: Request, res: Response) => {
+  try {
+    const { phone, otp } = req.body;
+    if (!phone || !otp) {
+      return res.status(400).json({ error: 'Phone and OTP are required' });
+    }
+
+    const result = verifyOtpCode(phone, otp);
+    if (!result.valid) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    // OTP verified — find the user by phone and issue a reset token
+    const userResult = await pool.query(
+      'SELECT u.id, u.email FROM users u JOIN employees e ON u.id = e.user_id WHERE e.phone = $1 LIMIT 1',
+      [phone]
+    );
+
+    if (userResult.rows.length === 0) {
+      // Also check companies table phone
+      const companyUser = await pool.query(
+        'SELECT u.id, u.email FROM users u JOIN companies c ON u.company_id = c.id WHERE c.phone = $1 AND u.role = \'admin\' LIMIT 1',
+        [phone]
+      );
+      if (companyUser.rows.length === 0) {
+        return res.status(400).json({ error: 'No account found for this phone number' });
+      }
+      const user = companyUser.rows[0];
+      const resetToken = generateToken({ id: user.id, email: user.email });
+      return res.json({ message: 'OTP verified', resetToken });
+    }
+
+    const user = userResult.rows[0];
+    const resetToken = generateToken({ id: user.id, email: user.email });
+    res.json({ message: 'OTP verified', resetToken });
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({ error: 'Failed to verify OTP' });
   }
 };
 
