@@ -5,6 +5,7 @@ import StatusBadge from '../../components/StatusBadge';
 import Modal from '../../components/Modal';
 import PayrunWarnings from '../../components/PayrunWarnings';
 import { computePayrunWarnings } from '../../utils/salary';
+import { PayslipCard } from '../Employee/Payslips';
 
 interface PayrunRow {
   id: number;
@@ -128,6 +129,50 @@ const PayrollPayrun: React.FC = () => {
 
   const periodLabel = new Date(period + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const noWageRows = previewRows.filter((r) => r.status === 'no_wage');
+
+  /* Build payslip card props from a PayrunRow */
+  const buildSlipProps = (r: PayrunRow) => {
+    const [y, m] = period.split('-').map(Number);
+    const totalDays = new Date(y, m, 0).getDate();
+    const basicWage = r.basicWage;
+    const hra = Math.round(basicWage * 0.40);
+    const standardAllowance = Math.round(basicWage * 0.10);
+    const lta = Math.round(basicWage * 0.05);
+    const fixedAllowance = Math.round(basicWage * 0.10);
+    const pfEmployee = r.pf;
+    const pfEmployer = pfEmployee;
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const nextMonth = m + 1 > 12 ? 1 : m + 1;
+    const nextYear = m + 1 > 12 ? y + 1 : y;
+    return {
+      companyName: 'EmPay HRMS',
+      monthLabel: monthNames[m - 1].toLowerCase(),
+      year: y,
+      empName: r.name,
+      empCode: r.loginId || `EMP${String(r.id).padStart(4,'0')}`,
+      department: r.department || '—',
+      location: '—',
+      dateOfJoining: '—',
+      bankAccount: '—',
+      payPeriod: `1/${m}/${y} to ${totalDays}/${m}/${y}`,
+      payDate: `3/${nextMonth}/${nextYear}`,
+      workedDays: r.daysPresent + r.paidLeaveDays,
+      totalDays,
+      basicSalary: basicWage,
+      hra,
+      standardAllowance,
+      performanceBonus: 0,
+      lta,
+      fixedAllowance,
+      grossEarnings: r.gross,
+      pfEmployee,
+      pfEmployer,
+      professionalTax: r.professionalTax,
+      tdsDeduction: 0,
+      totalDeductions: pfEmployee + pfEmployer + r.professionalTax,
+      netPay: r.netPay,
+    };
+  };
 
   return (
     <DashboardLayout title="Payroll Run">
@@ -262,60 +307,14 @@ const PayrollPayrun: React.FC = () => {
           open
           title={`Payslip — ${periodLabel}`}
           onClose={() => setViewSlip(null)}
-          size="md"
+          size="lg"
           footer={<button className="btn-primary" onClick={() => window.print()}>Print / Save PDF</button>}
         >
-          <PayslipView slip={viewSlip} period={periodLabel} />
+          <PayslipCard {...buildSlipProps(viewSlip)} />
         </Modal>
       )}
     </DashboardLayout>
   );
 };
-
-export const PayslipView: React.FC<{ slip: PayrunRow; period: string }> = ({ slip, period }) => (
-  <div style={{ fontFamily: 'Poppins, sans-serif' }}>
-    <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: 14, marginBottom: 18, display: 'flex', justifyContent: 'space-between' }}>
-      <div>
-        <h3 style={{ fontSize: 20, marginBottom: 4 }}>EmPay Payslip</h3>
-        <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>For {period}</div>
-      </div>
-      <div className="login-id-highlight">{slip.loginId}</div>
-    </div>
-
-    <div className="detail-grid" style={{ marginBottom: 22 }}>
-      <div className="detail-item"><span className="detail-label">Employee</span><span className="detail-value">{slip.name}</span></div>
-      <div className="detail-item"><span className="detail-label">Department</span><span className="detail-value">{slip.department || '—'}</span></div>
-      <div className="detail-item"><span className="detail-label">Days Worked</span><span className="detail-value">{slip.daysPresent + slip.paidLeaveDays} / {slip.workingDays}</span></div>
-      <div className="detail-item"><span className="detail-label">Basic Wage</span><span className="detail-value">₹{slip.basicWage.toLocaleString()}</span></div>
-    </div>
-
-    <h4 style={{ fontSize: 13, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>Earnings</h4>
-    <table className="table" style={{ marginBottom: 22 }}>
-      <tbody>
-        <tr><td>Gross Salary (pro-rated)</td><td style={{ textAlign: 'right' }}>₹{slip.gross.toLocaleString()}</td></tr>
-      </tbody>
-    </table>
-
-    <h4 style={{ fontSize: 13, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>Deductions</h4>
-    <table className="table" style={{ marginBottom: 22 }}>
-      <tbody>
-        <tr><td>Provident Fund (12%)</td><td style={{ textAlign: 'right' }}>{slip.pf > 0 ? `₹${slip.pf.toLocaleString()}` : '—'}</td></tr>
-        <tr><td>Professional Tax</td><td style={{ textAlign: 'right' }}>{slip.professionalTax > 0 ? `₹${slip.professionalTax.toLocaleString()}` : '—'}</td></tr>
-        <tr><td><strong>Total Deductions</strong></td><td style={{ textAlign: 'right' }}><strong>₹{(slip.pf + slip.professionalTax).toLocaleString()}</strong></td></tr>
-      </tbody>
-    </table>
-
-    <div style={{ background: 'var(--accent-soft)', padding: 18, borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--odoo-green-dark)' }}>NET PAY</span>
-      <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--odoo-green-dark)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>₹{slip.netPay.toLocaleString()}</span>
-    </div>
-
-    {slip.pfApplicable && (
-      <div className="form-hint" style={{ marginTop: 14, fontStyle: 'italic' }}>
-        Employer PF contribution: ₹{Math.round(Math.min(slip.basicWage, 15000) * 0.12).toLocaleString()} (informational, not deducted)
-      </div>
-    )}
-  </div>
-);
 
 export default PayrollPayrun;
