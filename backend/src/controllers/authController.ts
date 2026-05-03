@@ -83,13 +83,14 @@ export const login = async (req: Request, res: Response) => {
 
     const { email, password } = value;
 
+    // Support login via email OR login_id
     const result = await pool.query(
-      'SELECT id, company_id, email, password_hash, role, is_active, first_login FROM users WHERE email = $1',
+      'SELECT id, company_id, login_id, email, password_hash, role, is_active, first_login FROM users WHERE email = $1 OR login_id = $1',
       [email]
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid email/login ID or password' });
     }
 
     const user = result.rows[0];
@@ -106,7 +107,7 @@ export const login = async (req: Request, res: Response) => {
     const isValidPassword = await comparePassword(password, user.password_hash);
     if (!isValidPassword) {
       await incrementFailedAttempts(user.id);
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid email/login ID or password' });
     }
 
     await resetFailedAttempts(user.id);

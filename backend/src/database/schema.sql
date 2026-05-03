@@ -42,7 +42,7 @@ CREATE TABLE employees (
   department VARCHAR(100),
   designation VARCHAR(100) NOT NULL,
   date_of_joining DATE NOT NULL,
-  employment_type VARCHAR(20) CHECK (employment_type IN ('full_time', 'part_time', 'contract')),
+  employment_type VARCHAR(20) CHECK (employment_type IN ('full_time', 'part_time', 'contract', 'intern')),
   reporting_manager_id INTEGER REFERENCES employees(id),
   basic_wage DECIMAL(10, 2) NOT NULL,
   pf_applicable BOOLEAN DEFAULT false,

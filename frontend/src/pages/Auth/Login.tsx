@@ -81,17 +81,17 @@ const Login: React.FC = () => {
         <div className="auth-card">
           <div className="auth-header">
             <h1>Welcome back</h1>
-            <p>Sign in to continue to your dashboard</p>
+            <p>Sign in with your email or Login ID</p>
           </div>
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="error-message">{error}</div>}
             <div className="form-group">
-              <label>Email</label>
+              <label>Email or Login ID</label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
+                placeholder="you@company.com or TCNV01ABCD20260001"
                 required
               />
             </div>

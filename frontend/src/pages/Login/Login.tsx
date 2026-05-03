@@ -73,21 +73,21 @@ const Login: React.FC = () => {
         <div className="login-header">
           <div className="login-logo">EmPay</div>
           <h2>Welcome Back</h2>
-          <p>Please enter your credentials to access your account.</p>
+          <p>Enter your email or Login ID to access your account.</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="form-group">
-            <label htmlFor="loginId">Email</label>
+            <label htmlFor="loginId">Email or Login ID</label>
             <input
               type="text"
               id="loginId"
               className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. admin@empay.com"
+              placeholder="you@company.com or TCNV01ABCD20260001"
               required
             />
           </div>

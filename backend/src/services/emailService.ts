@@ -1,3 +1,5 @@
+import nodemailer from 'nodemailer';
+
 interface EmailOptions {
   to: string;
   subject: string;
@@ -5,21 +7,40 @@ interface EmailOptions {
   html?: string;
 }
 
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
+  },
+});
+
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
   const { to, subject, text, html } = options;
-  
+
   if (process.env.EMAIL_SERVICE === 'mock') {
     console.log('\n=== EMAIL SENT (MOCK) ===');
     console.log(`To: ${to}`);
     console.log(`Subject: ${subject}`);
-    console.log(`Text: ${text || 'N/A'}`);
-    console.log(`HTML: ${html ? 'Present' : 'N/A'}`);
     console.log('========================\n');
     return;
   }
-  
-  // Real email implementation would go here (SMTP, SendGrid, etc.)
-  throw new Error('Real email service not configured');
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"EmPay HRMS" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      text: text || '',
+      html: html || '',
+    });
+    console.log(`✅ Email sent successfully to ${to} (Message ID: ${info.messageId})`);
+  } catch (error) {
+    console.error(`❌ Failed to send email to ${to}:`, error);
+    // Don't throw — email failure should not crash employee creation
+  }
 };
 
 export const sendWelcomeEmail = async (
@@ -29,7 +50,7 @@ export const sendWelcomeEmail = async (
   employeeName: string
 ): Promise<void> => {
   const subject = 'Welcome to EmPay HRMS - Your Login Credentials';
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -57,8 +78,7 @@ export const sendWelcomeEmail = async (
         .warning-box strong { color: #92400e; display: block; margin-bottom: 8px; font-size: 14px; }
         .warning-box p { color: #78350f; font-size: 14px; line-height: 1.6; }
         .cta-section { text-align: center; margin: 35px 0; }
-        .button { display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3); transition: transform 0.2s; }
-        .button:hover { transform: translateY(-2px); }
+        .button { display: inline-block; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3); }
         .instructions { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 25px 0; }
         .instructions h3 { font-size: 14px; color: #0f172a; margin-bottom: 12px; font-weight: 600; }
         .instructions ol { margin-left: 20px; color: #475569; }
@@ -80,14 +100,14 @@ export const sendWelcomeEmail = async (
             <h1>Welcome to EmPay HRMS</h1>
             <p>Your Gateway to Smart HR Management</p>
           </div>
-          
+
           <div class="content">
             <p class="greeting">Dear ${employeeName},</p>
-            
+
             <p class="intro-text">
               Welcome to our organization! We are excited to have you on board. Your employee account has been successfully created in our EmPay HRMS system. This platform will be your central hub for attendance, leave management, payroll, and more.
             </p>
-            
+
             <div class="credentials-box">
               <div class="credentials-title">🔐 Your Login Credentials</div>
               <div class="credential-item">
@@ -99,12 +119,12 @@ export const sendWelcomeEmail = async (
                 <span class="credential-value">${password}</span>
               </div>
             </div>
-            
+
             <div class="warning-box">
               <strong>⚠️ Important Security Notice</strong>
               <p>For your security, you will be required to change your password immediately upon first login. Please keep your credentials confidential and do not share them with anyone.</p>
             </div>
-            
+
             <div class="instructions">
               <h3>📝 Getting Started - Follow These Steps:</h3>
               <ol>
@@ -115,22 +135,22 @@ export const sendWelcomeEmail = async (
                 <li>Explore the dashboard and familiarize yourself with the system</li>
               </ol>
             </div>
-            
+
             <div class="cta-section">
               <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login" class="button">Login to EmPay HRMS →</a>
             </div>
-            
+
             <div class="support-section">
               <p>Need help getting started? Contact your HR department or IT support team for assistance.</p>
             </div>
           </div>
-          
+
           <div class="footer">
             <p>This is an automated email from EmPay HRMS. Please do not reply to this message.</p>
             <p>&copy; 2026 EmPay HRMS. All rights reserved.</p>
             <div class="footer-links">
-              <a href="#">Privacy Policy</a> | 
-              <a href="#">Terms of Service</a> | 
+              <a href="#">Privacy Policy</a> |
+              <a href="#">Terms of Service</a> |
               <a href="#">Help Center</a>
             </div>
           </div>
@@ -139,61 +159,25 @@ export const sendWelcomeEmail = async (
     </body>
     </html>
   `;
-  
+
   const text = `
-═══════════════════════════════════════════════════════════
-                    WELCOME TO EMPAY HRMS
-           Your Gateway to Smart HR Management
-═══════════════════════════════════════════════════════════
+Welcome to EmPay HRMS
 
 Dear ${employeeName},
 
-Welcome to our organization! We are excited to have you on board.
+Your employee account has been successfully created.
 
-Your employee account has been successfully created in our EmPay HRMS 
-system. This platform will be your central hub for attendance, leave 
-management, payroll, and more.
+LOGIN CREDENTIALS:
+  Login ID:           ${loginId}
+  Temporary Password: ${password}
 
-───────────────────────────────────────────────────────────
-🔐 YOUR LOGIN CREDENTIALS
-───────────────────────────────────────────────────────────
+IMPORTANT: You will be required to change your password on first login.
 
-Login ID:           ${loginId}
-Temporary Password: ${password}
-
-───────────────────────────────────────────────────────────
-⚠️  IMPORTANT SECURITY NOTICE
-───────────────────────────────────────────────────────────
-
-For your security, you will be required to change your password 
-immediately upon first login. Please keep your credentials 
-confidential and do not share them with anyone.
-
-───────────────────────────────────────────────────────────
-📝 GETTING STARTED - FOLLOW THESE STEPS
-───────────────────────────────────────────────────────────
-
-1. Visit: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/login
-2. Enter your Login ID and Temporary Password
-3. Create a strong new password when prompted
-4. Complete your profile information
-5. Explore the dashboard and familiarize yourself with the system
-
-───────────────────────────────────────────────────────────
-
-Need help getting started? Contact your HR department or IT 
-support team for assistance.
+Visit: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/login
 
 Best regards,
 EmPay HRMS Team
-
-───────────────────────────────────────────────────────────
-This is an automated email from EmPay HRMS.
-Please do not reply to this message.
-
-© 2026 EmPay HRMS. All rights reserved.
-═══════════════════════════════════════════════════════════
   `;
-  
+
   await sendEmail({ to: email, subject, text, html });
 };

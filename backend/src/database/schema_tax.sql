@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tax_declarations (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_tax_declarations_employee ON tax_declarations(employee_id);
-CREATE INDEX idx_tax_declarations_status ON tax_declarations(status);
-CREATE INDEX idx_tax_declarations_financial_year ON tax_declarations(financial_year);
+CREATE INDEX IF NOT EXISTS idx_tax_declarations_employee ON tax_declarations(employee_id);
+CREATE INDEX IF NOT EXISTS idx_tax_declarations_status ON tax_declarations(status);
+CREATE INDEX IF NOT EXISTS idx_tax_declarations_financial_year ON tax_declarations(financial_year);
+

@@ -26,20 +26,20 @@ INSERT INTO companies (id, name, company_code, email, phone, address) VALUES
 -- ============================================================
 INSERT INTO users (id, company_id, login_id, email, password_hash, role, is_active, first_login, failed_login_attempts, account_locked_until) VALUES
 -- TechNova (company_id = 1)
-(1,  1, 'TCNV-ADM-001', 'admin@technova.com',       '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin',           true,  false, 0, NULL),
-(2,  1, 'TCNV-HR-001',  'priya.sharma@technova.com','$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr_officer',      true,  false, 0, NULL),
-(3,  1, 'TCNV-HR-002',  'karan.mehta@technova.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr_officer',      true,  false, 0, NULL),
-(4,  1, 'TCNV-PAY-001', 'finance@technova.com',     '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'payroll_officer', true,  false, 0, NULL),
-(5,  1, 'TCNV-EMP-001', 'arjun.kapoor@technova.com','$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  false, 0, NULL),
-(6,  1, 'TCNV-EMP-002', 'neha.joshi@technova.com',  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  false, 0, NULL),
-(7,  1, 'TCNV-EMP-003', 'rohan.verma@technova.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  false, 0, NULL),
-(8,  1, 'TCNV-EMP-004', 'ananya.singh@technova.com','$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  true,  0, NULL),  -- first_login=true for onboarding flow test
-(9,  1, 'TCNV-EMP-005', 'dev.null@technova.com',    '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        false, false, 0, NULL),  -- inactive user
-(10, 1, 'TCNV-EMP-006', 'locked.user@technova.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  false, 5, NOW() + INTERVAL '15 minutes'), -- locked account test
+(1,  1, 'TCNV-ADM-001', 'admin@technova.com',       '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'admin',           true,  false, 0, NULL),
+(2,  1, 'TCNV-HR-001',  'priya.sharma@technova.com','$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'hr_officer',      true,  false, 0, NULL),
+(3,  1, 'TCNV-HR-002',  'karan.mehta@technova.com', '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'hr_officer',      true,  false, 0, NULL),
+(4,  1, 'TCNV-PAY-001', 'finance@technova.com',     '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'payroll_officer', true,  false, 0, NULL),
+(5,  1, 'TCNV-EMP-001', 'arjun.kapoor@technova.com','$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  false, 0, NULL),
+(6,  1, 'TCNV-EMP-002', 'neha.joshi@technova.com',  '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  false, 0, NULL),
+(7,  1, 'TCNV-EMP-003', 'rohan.verma@technova.com', '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  false, 0, NULL),
+(8,  1, 'TCNV-EMP-004', 'ananya.singh@technova.com','$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  true,  0, NULL),  -- first_login=true for onboarding flow test
+(9,  1, 'TCNV-EMP-005', 'dev.null@technova.com',    '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        false, false, 0, NULL),  -- inactive user
+(10, 1, 'TCNV-EMP-006', 'locked.user@technova.com', '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  false, 5, NOW() + INTERVAL '15 minutes'), -- locked account test
 -- BrightMind (company_id = 2)
-(11, 2, 'BRMD-ADM-001', 'admin@brightmind.com',     '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin',           true,  false, 0, NULL),
-(12, 2, 'BRMD-HR-001',  'hr@brightmind.com',        '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'hr_officer',      true,  false, 0, NULL),
-(13, 2, 'BRMD-EMP-001', 'teacher1@brightmind.com',  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'employee',        true,  false, 0, NULL);
+(11, 2, 'BRMD-ADM-001', 'admin@brightmind.com',     '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'admin',           true,  false, 0, NULL),
+(12, 2, 'BRMD-HR-001',  'hr@brightmind.com',        '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'hr_officer',      true,  false, 0, NULL),
+(13, 2, 'BRMD-EMP-001', 'teacher1@brightmind.com',  '$2b$10$uzF/VegK.NI1wutAIMXFyOMj.TTPkghNL.erd.hRk4sf9XiYV2LAW', 'employee',        true,  false, 0, NULL);
 
 -- ============================================================
 -- 3. EMPLOYEES

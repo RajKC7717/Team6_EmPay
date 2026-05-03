@@ -48,11 +48,11 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     const joiningDate = new Date(dateOfJoining);
-    if (joiningDate > new Date()) {
-      return res.status(400).json({ error: 'Joining date cannot be in the future' });
-    }
 
     const companyResult = await pool.query('SELECT company_code FROM companies WHERE id = $1', [companyId]);
+    if (companyResult.rows.length === 0) {
+      return res.status(400).json({ error: 'Company not found' });
+    }
     const companyCode = companyResult.rows[0].company_code;
 
     const joiningYear = joiningDate.getFullYear();
@@ -119,6 +119,7 @@ export const createEmployee = async (req: Request, res: Response) => {
 
       res.status(201).json({
         message: 'Employee created successfully',
+        temporaryPassword: tempPassword,
         employee: {
           id: employeeId,
           userId,
