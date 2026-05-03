@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import Modal from '../../components/Modal';
 import StatusBadge from '../../components/StatusBadge';
 import EmployeeFormModal from '../../components/EmployeeFormModal';
+import EmployeeCards from '../../components/EmployeeCards';
 
 const AdminEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -13,6 +14,7 @@ const AdminEmployees: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [addOpen, setAddOpen] = useState(false);
   const [credentials, setCredentials] = useState<{ loginId: string; password: string; email: string; name: string } | null>(null);
+  const [view, setView] = useState<'cards' | 'list'>('cards');
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -59,6 +61,15 @@ const AdminEmployees: React.FC = () => {
         </div>
       </div>
 
+      <div className="tabs" style={{ marginBottom: 16 }}>
+        <button className={`tab ${view === 'cards' ? 'active' : ''}`} onClick={() => setView('cards')}>🃏 Cards</button>
+        <button className={`tab ${view === 'list' ? 'active' : ''}`} onClick={() => setView('list')}>📋 List</button>
+      </div>
+
+      {view === 'cards' ? (
+        <EmployeeCards employees={employees} showSalary />
+      ) : (
+        <>
       <div className="filter-bar">
         <input
           type="text"
@@ -121,6 +132,8 @@ const AdminEmployees: React.FC = () => {
           </table>
         )}
       </div>
+        </>
+      )}
 
       {addOpen && (
         <EmployeeFormModal

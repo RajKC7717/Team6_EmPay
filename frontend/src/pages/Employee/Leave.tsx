@@ -13,6 +13,13 @@ const EmployeeLeave: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({ leaveTypeId: '' as string | number, fromDate: '', toDate: '', reason: '' });
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachError, setAttachError] = useState<string | null>(null);
+
+  const isSickLeave = (() => {
+    const sel = balances.find((b) => b.leave_type_id === Number(form.leaveTypeId));
+    return sel?.leave_type_name?.toLowerCase().includes('sick') || false;
+  })();
 
   const fetchData = async () => {
     setLoading(true);
@@ -28,6 +35,16 @@ const EmployeeLeave: React.FC = () => {
 
   useEffect(() => { fetchData(); }, []);
 
+  const handleAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAttachError(null);
+    const file = e.target.files?.[0];
+    if (!file) { setAttachment(null); return; }
+    const allowed = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowed.includes(file.type)) { setAttachError('Only JPG, PNG, or PDF files accepted'); setAttachment(null); return; }
+    if (file.size > 5 * 1024 * 1024) { setAttachError('File exceeds 5MB limit'); setAttachment(null); return; }
+    setAttachment(file);
+  };
+
   const submit = async () => {
     setError(null); setSuccess(null);
     if (!form.leaveTypeId || !form.fromDate || !form.toDate || !form.reason.trim()) {
@@ -38,6 +55,9 @@ const EmployeeLeave: React.FC = () => {
     const selected = balances.find((b) => b.leave_type_id === Number(form.leaveTypeId));
     if (selected && selected.is_paid && selected.remaining_days <= 0) {
       setError(`Insufficient ${selected.leave_type_name} balance. You have 0 days remaining.`); return;
+    }
+    if (isSickLeave && !attachment) {
+      setError('Medical proof is required for sick leave. Please upload a doctor\'s prescription, certificate, or receipt.'); return;
     }
 
     setBusy(true);
@@ -50,6 +70,7 @@ const EmployeeLeave: React.FC = () => {
       });
       setSuccess('Leave request submitted successfully!');
       setForm({ leaveTypeId: '', fromDate: '', toDate: '', reason: '' });
+      setAttachment(null);
       fetchData();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to submit leave request');
@@ -137,6 +158,32 @@ const EmployeeLeave: React.FC = () => {
                 <label>Reason <span className="required">*</span></label>
                 <textarea value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} placeholder="Explain why you need time off" />
               </div>
+
+              {isSickLeave && (
+                <div className="form-group">
+                  <label>Upload Medical Proof <span className="required">*</span></label>
+                  <div style={{ border: '2px dashed var(--border)', borderRadius: 10, padding: '18px 20px', textAlign: 'center', background: 'var(--gray-50)', transition: 'border-color 0.2s' }}>
+                    <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleAttachment} id="sick-attach" style={{ display: 'none' }} />
+                    <label htmlFor="sick-attach" style={{ cursor: 'pointer', display: 'block' }}>
+                      {attachment ? (
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--green-600)', marginBottom: 4 }}>✓ {attachment.name}</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{(attachment.size / 1024).toFixed(0)} KB · Click to replace</div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ fontSize: 24, marginBottom: 6 }}>📎</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--primary)' }}>Choose File or Drag & Drop</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>JPG, PNG, or PDF · Max 5MB</div>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                  {attachError && <span style={{ fontSize: 12, color: 'var(--red-600)', marginTop: 4, display: 'block' }}>{attachError}</span>}
+                  <span className="form-hint" style={{ marginTop: 6, display: 'block' }}>Upload a doctor's prescription, medical certificate, or hospital receipt as proof.</span>
+                </div>
+              )}
+
               <button className="btn-primary" onClick={submit} disabled={busy}>
                 {busy ? 'Submitting…' : 'Submit Leave Request'}
               </button>

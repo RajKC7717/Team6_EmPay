@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import EmployeeFormModal from '../../components/EmployeeFormModal';
 import Modal from '../../components/Modal';
+import EmployeeCards from '../../components/EmployeeCards';
 
 const HREmployees: React.FC = () => {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -13,6 +14,7 @@ const HREmployees: React.FC = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [credentials, setCredentials] = useState<any>(null);
   const [allocateFor, setAllocateFor] = useState<any | null>(null);
+  const [view, setView] = useState<'cards' | 'list'>('cards');
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -45,6 +47,18 @@ const HREmployees: React.FC = () => {
         </div>
       </div>
 
+      <div className="tabs" style={{ marginBottom: 16 }}>
+        <button className={`tab ${view === 'cards' ? 'active' : ''}`} onClick={() => setView('cards')}>🃏 Cards</button>
+        <button className={`tab ${view === 'list' ? 'active' : ''}`} onClick={() => setView('list')}>📋 List</button>
+      </div>
+
+      {view === 'cards' ? (
+        <EmployeeCards
+          employees={employees}
+          onAllocate={(e) => setAllocateFor(e)}
+        />
+      ) : (
+        <>
       <div className="filter-bar">
         <input
           type="text"
@@ -98,6 +112,8 @@ const HREmployees: React.FC = () => {
           </table>
         )}
       </div>
+        </>
+      )}
 
       {addOpen && (
         <EmployeeFormModal

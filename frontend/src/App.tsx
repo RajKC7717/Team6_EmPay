@@ -3,8 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Landing from './pages/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 import AdminDashboard from './pages/Admin/Dashboard';
 import AdminEmployees from './pages/Admin/Employees';
+import AdminSettings from './pages/Admin/Settings';
+import AdminReports from './pages/Admin/Reports';
 import HRDashboard from './pages/HR/Dashboard';
 import HREmployees from './pages/HR/Employees';
 import HRAttendance from './pages/HR/Attendance';
@@ -16,6 +19,7 @@ import EmployeeAttendance from './pages/Employee/Attendance';
 import EmployeeLeave from './pages/Employee/Leave';
 import EmployeePayslips from './pages/Employee/Payslips';
 import EmployeeProfile from './pages/Employee/Profile';
+import EmployeeTax from './pages/Employee/Tax';
 import PerformanceReviews from './pages/Performance/Reviews';
 import PerformanceGoals from './pages/Performance/Goals';
 import PolicyList from './pages/Policies/PolicyList';
@@ -28,6 +32,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Admin */}
         <Route path="/admin" element={<AdminDashboard />} />
@@ -35,6 +40,8 @@ const App: React.FC = () => {
         <Route path="/admin/performance" element={<PerformanceReviews />} />
         <Route path="/admin/policies" element={<PolicyList />} />
         <Route path="/admin/tax" element={<TaxDeclarations />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/reports" element={<AdminReports />} />
 
         {/* HR */}
         <Route path="/hr" element={<HRDashboard />} />
@@ -49,6 +56,7 @@ const App: React.FC = () => {
         <Route path="/payroll/payrun" element={<PayrollPayrun />} />
         <Route path="/payroll/tax" element={<TaxDeclarations />} />
         <Route path="/payroll/policies" element={<PolicyList />} />
+        <Route path="/payroll/reports" element={<AdminReports />} />
 
         {/* Employee */}
         <Route path="/employee" element={<EmployeeDashboard />} />
@@ -56,7 +64,7 @@ const App: React.FC = () => {
         <Route path="/employee/leave" element={<EmployeeLeave />} />
         <Route path="/employee/payslips" element={<EmployeePayslips />} />
         <Route path="/employee/profile" element={<EmployeeProfile />} />
-        <Route path="/employee/tax" element={<TaxDeclarations />} />
+        <Route path="/employee/tax" element={<EmployeeTax />} />
         <Route path="/employee/performance" element={<PerformanceReviews />} />
         <Route path="/employee/policies" element={<PolicyList />} />
 

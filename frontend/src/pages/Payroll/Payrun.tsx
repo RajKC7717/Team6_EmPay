@@ -3,6 +3,8 @@ import api from '../../api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import Modal from '../../components/Modal';
+import PayrunWarnings from '../../components/PayrunWarnings';
+import { computePayrunWarnings } from '../../utils/salary';
 
 interface PayrunRow {
   id: number;
@@ -151,6 +153,8 @@ const PayrollPayrun: React.FC = () => {
           )}
         </div>
       </div>
+
+      <PayrunWarnings warnings={computePayrunWarnings(employees)} />
 
       <div className="policy-notice">
         ⓘ <strong>Formula:</strong> Gross = (Basic ÷ working days) × (days present + paid leaves). PF = 12% of basic (capped at ₹15,000).

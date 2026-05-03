@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../api';
+import FirstLoginModal from '../../components/FirstLoginModal';
 import '../../styles/Auth.css';
 
 const EyeIcon = ({ open }: { open: boolean }) =>
@@ -22,7 +23,20 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [firstLogin, setFirstLogin] = useState<{ tempPw: string; userEmail: string } | null>(null);
   const navigate = useNavigate();
+
+  const goToHome = () => {
+    const raw = localStorage.getItem('user');
+    const role = raw ? JSON.parse(raw).role : null;
+    switch (role) {
+      case 'admin': navigate('/admin'); break;
+      case 'hr_officer': navigate('/hr'); break;
+      case 'payroll_officer': navigate('/payroll'); break;
+      case 'employee': navigate('/employee'); break;
+      default: navigate('/');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,14 +49,13 @@ const Login: React.FC = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      const role = response.data.user.role;
-      switch (role) {
-        case 'admin': navigate('/admin'); break;
-        case 'hr_officer': navigate('/hr'); break;
-        case 'payroll_officer': navigate('/payroll'); break;
-        case 'employee': navigate('/employee'); break;
-        default: navigate('/');
+      // First-login: must set new password before proceeding
+      if (response.data.user?.first_login) {
+        setFirstLogin({ tempPw: password, userEmail: response.data.user.email });
+        return;
       }
+
+      goToHome();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
     } finally {
@@ -114,6 +127,9 @@ const Login: React.FC = () => {
                   <EyeIcon open={showPassword} />
                 </button>
               </div>
+              <div style={{ textAlign: 'right', marginTop: 4 }}>
+                <Link to="/forgot-password" style={{ fontSize: 12.5, fontWeight: 500 }}>Forgot password?</Link>
+              </div>
             </div>
             <button type="submit" className="btn-primary btn-block btn-lg" disabled={loading}>
               {loading ? 'Signing in…' : 'Sign In'}
@@ -124,6 +140,14 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {firstLogin && (
+        <FirstLoginModal
+          tempPassword={firstLogin.tempPw}
+          userEmail={firstLogin.userEmail}
+          onComplete={() => { setFirstLogin(null); goToHome(); }}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { getCompanyLogo, getCompanyName } from '../utils/companyBranding';
 import '../styles/Sidebar.css';
 
 type Role = 'admin' | 'hr_officer' | 'payroll_officer' | 'employee';
@@ -18,6 +19,8 @@ const NAV_BY_ROLE: Record<Role, NavLink[]> = {
     { to: '/admin/policies', label: 'Policies', icon: '◐' },
     { to: '/payroll/payrun', label: 'Payroll', icon: '◓' },
     { to: '/admin/tax', label: 'Tax Approvals', icon: '◒' },
+    { to: '/admin/reports', label: 'Reports', icon: '◑' },
+    { to: '/admin/settings', label: 'Settings', icon: '◐' },
   ],
   hr_officer: [
     { to: '/hr', label: 'Dashboard', icon: '◧' },
@@ -31,6 +34,7 @@ const NAV_BY_ROLE: Record<Role, NavLink[]> = {
     { to: '/payroll', label: 'Dashboard', icon: '◧' },
     { to: '/payroll/payrun', label: 'Payroll Runs', icon: '◓' },
     { to: '/payroll/tax', label: 'Tax Approvals', icon: '◒' },
+    { to: '/payroll/reports', label: 'Reports', icon: '◑' },
     { to: '/payroll/policies', label: 'Policies', icon: '◐' },
   ],
   employee: [
@@ -58,13 +62,22 @@ const Sidebar: React.FC<Props> = ({ role }) => {
     employee: 'Employee',
   }[role];
 
+  const companyLogo = getCompanyLogo();
+  const companyName = getCompanyName();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
         <Link to="/" className="sidebar-logo">
-          <div className="sidebar-logo-mark">E</div>
+          {companyLogo ? (
+            <div className="sidebar-logo-mark" style={{ background: 'var(--gray-50)', padding: 4 }}>
+              <img src={companyLogo} alt="Company logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
+            </div>
+          ) : (
+            <div className="sidebar-logo-mark">{(companyName?.[0] || 'E').toUpperCase()}</div>
+          )}
           <div>
-            <div className="sidebar-logo-name">EmPay</div>
+            <div className="sidebar-logo-name">{companyName || 'EmPay'}</div>
             <div className="sidebar-logo-sub">{roleLabel}</div>
           </div>
         </Link>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
+import PayrunWarnings from '../../components/PayrunWarnings';
+import { computePayrunWarnings } from '../../utils/salary';
 
 const PayrollDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -72,6 +74,8 @@ const PayrollDashboard: React.FC = () => {
               <div className="stat-card-change">Before deductions</div>
             </div>
           </div>
+
+          <PayrunWarnings warnings={computePayrunWarnings(employees)} />
 
           <div className="policy-notice">
             ⓘ <strong>Payroll Policy:</strong> Payroll runs are computed using basic wage, attendance, and approved leaves.
