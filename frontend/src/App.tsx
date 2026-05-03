@@ -21,7 +21,6 @@ import EmployeePayslips from './pages/Employee/Payslips';
 import EmployeeProfile from './pages/Employee/Profile';
 import EmployeeTax from './pages/Employee/Tax';
 import PerformanceReviews from './pages/Performance/Reviews';
-import PerformanceGoals from './pages/Performance/Goals';
 import PolicyList from './pages/Policies/PolicyList';
 import TaxDeclarations from './pages/Tax/Declarations';
 

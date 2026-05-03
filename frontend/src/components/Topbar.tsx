@@ -75,7 +75,10 @@ const Topbar: React.FC<Props> = ({ title }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch { /* ignore — token may already be expired */ }
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
