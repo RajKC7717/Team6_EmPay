@@ -173,8 +173,8 @@ const Topbar: React.FC<Props> = ({ title }) => {
                 className="user-dropdown-item"
                 onClick={() => {
                   setMenuOpen(false);
-                  if (isEmployee) navigate('/employee/profile');
-                  else navigate(`/${role === 'hr_officer' ? 'hr' : role === 'payroll_officer' ? 'payroll' : 'admin'}`);
+                  const base = role === 'hr_officer' ? 'hr' : role === 'payroll_officer' ? 'payroll' : role === 'admin' ? 'admin' : 'employee';
+                  navigate(`/${base}/profile`);
                 }}
               >
                 <span className="dd-icon">◔</span>

@@ -93,7 +93,7 @@ const ForgotPassword: React.FC = () => {
     if (newPassword !== confirmPassword) { setError('Passwords do not match'); return; }
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/auth/reset-password`, { resetToken, newPassword });
+      await axios.post(`${API_URL}/auth/reset-password`, { token: resetToken, newPassword, confirmPassword });
       setSuccess('Password reset successfully! Redirecting to login…');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {

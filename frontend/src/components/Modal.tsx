@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import '../styles/Modal.css';
 
 interface Props {
@@ -24,7 +25,10 @@ const Modal: React.FC<Props> = ({ open, onClose, title, children, footer, size =
 
   if (!open) return null;
 
-  return (
+  // Use React Portal to render at document.body level — 
+  // this ensures the modal is NEVER constrained by parent
+  // overflow, transform, or stacking context.
+  return ReactDOM.createPortal(
     <div className="modal-backdrop" onClick={onClose}>
       <div className={`modal modal-${size} fade-up`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
@@ -34,7 +38,8 @@ const Modal: React.FC<Props> = ({ open, onClose, title, children, footer, size =
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -42,6 +42,7 @@ const App: React.FC = () => {
         <Route path="/admin/tax" element={<TaxDeclarations />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/admin/reports" element={<AdminReports />} />
+        <Route path="/admin/profile" element={<EmployeeProfile />} />
 
         {/* HR */}
         <Route path="/hr" element={<HRDashboard />} />
@@ -50,6 +51,7 @@ const App: React.FC = () => {
         <Route path="/hr/leave" element={<HRLeave />} />
         <Route path="/hr/performance" element={<PerformanceReviews />} />
         <Route path="/hr/policies" element={<PolicyList />} />
+        <Route path="/hr/profile" element={<EmployeeProfile />} />
 
         {/* Payroll */}
         <Route path="/payroll" element={<PayrollDashboard />} />
@@ -57,6 +59,7 @@ const App: React.FC = () => {
         <Route path="/payroll/tax" element={<TaxDeclarations />} />
         <Route path="/payroll/policies" element={<PolicyList />} />
         <Route path="/payroll/reports" element={<AdminReports />} />
+        <Route path="/payroll/profile" element={<EmployeeProfile />} />
 
         {/* Employee */}
         <Route path="/employee" element={<EmployeeDashboard />} />
